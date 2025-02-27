@@ -1,0 +1,103 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+// Custom Exception: Course Full
+class CourseFullException extends Exception {
+    public CourseFullException(String message) {
+        super(message);
+    }
+}
+
+// Custom Exception: Prerequisite Not Met
+class PrerequisiteNotMetException extends Exception {
+    public PrerequisiteNotMetException(String message) {
+        super(message);
+    }
+}
+
+// Course Class
+class Course {
+    private String name;
+    private String prerequisite;
+    private int capacity;
+    private List<String> enrolledStudents;
+
+    // Constructor
+    public Course(String name, String prerequisite, int capacity) {
+        this.name = name;
+        this.prerequisite = prerequisite;
+        this.capacity = capacity;
+        this.enrolledStudents = new ArrayList<>();
+    }
+
+    // Getters
+    public String getName() {
+        return name;
+    }
+
+    public String getPrerequisite() {
+        return prerequisite;
+    }
+
+    // Enrollment Method
+    public void enrollStudent(String studentName, List<String> completedCourses) 
+            throws CourseFullException, PrerequisiteNotMetException {
+
+        // Check for prerequisite completion
+        if (!prerequisite.equals("None") && !completedCourses.contains(prerequisite)) {
+            throw new PrerequisiteNotMetException(
+                "Error: PrerequisiteNotMetException - Complete " + prerequisite + 
+                " before enrolling in " + name + "."
+            );
+        }
+
+        // Check if course is full
+        if (enrolledStudents.size() >= capacity) {
+            throw new CourseFullException("Error: CourseFullException - " + name + " is full.");
+        }
+
+        // Enroll student
+        enrolledStudents.add(studentName);
+        System.out.println("Enrollment successful! " + studentName + " enrolled in " + name);
+    }
+}
+
+// Main Class
+public class UniversityEnrollment {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Create courses
+        Course coreJava = new Course("Core Java", "None", 2);
+        Course advancedJava = new Course("Advanced Java", "Core Java", 2);
+
+        // List to store completed courses
+        List<String> completedCourses = new ArrayList<>();
+        
+        // Enroll students
+        try {
+            System.out.print("Enter Student Name: ");
+            String studentName = scanner.nextLine();
+
+            System.out.print("Enroll in Course (Core Java / Advanced Java): ");
+            String courseChoice = scanner.nextLine();
+
+            Course selectedCourse = courseChoice.equalsIgnoreCase("Advanced Java") ? advancedJava : coreJava;
+
+            // Try enrolling student
+            selectedCourse.enrollStudent(studentName, completedCourses);
+
+            // If Core Java is completed, add it to completedCourses
+            if (selectedCourse.getName().equals("Core Java")) {
+                completedCourses.add("Core Java");
+            }
+
+        } catch (CourseFullException | PrerequisiteNotMetException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            System.out.println("Enrollment process completed.");
+            scanner.close();
+        }
+    }
+}

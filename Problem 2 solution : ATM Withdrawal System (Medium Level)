@@ -1,0 +1,57 @@
+import java.util.Scanner;
+
+class ATM {
+    private final int correctPin = 1234;
+    private double balance;
+
+    // Constructor to initialize balance
+    public ATM(double balance) {
+        this.balance = balance;
+    }
+
+    // Method to authenticate PIN
+    public void authenticate(int pin) throws SecurityException {
+        if (pin != correctPin) {
+            throw new SecurityException("Error: Invalid PIN.");
+        }
+    }
+
+    // Method to withdraw money
+    public void withdraw(double amount) throws IllegalArgumentException {
+        if (amount > balance) {
+            throw new IllegalArgumentException("Error: Insufficient balance.");
+        }
+        balance -= amount;
+        System.out.println("Withdrawal successful! Current Balance: " + balance);
+    }
+
+    // Method to display balance
+    public void displayBalance() {
+        System.out.println("Current Balance: " + balance);
+    }
+}
+
+public class ATMSystem {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        ATM atm = new ATM(3000); // Initial balance set to 3000
+
+        try {
+            // PIN Authentication
+            System.out.print("Enter PIN: ");
+            int pin = scanner.nextInt();
+            atm.authenticate(pin);
+
+            // Withdrawal
+            System.out.print("Withdraw Amount: ");
+            double amount = scanner.nextDouble();
+            atm.withdraw(amount);
+
+        } catch (SecurityException | IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            atm.displayBalance(); // Always display remaining balance
+            scanner.close();
+        }
+    }
+}
